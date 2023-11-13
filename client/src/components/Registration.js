@@ -24,7 +24,6 @@ const Registration = () => {
         //send to login page with successful registration
         if(data.status === 'ok') {
             alert("Successful Registration");
-            window.location.href="/login";
         }
     }
 
