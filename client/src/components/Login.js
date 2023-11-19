@@ -21,6 +21,7 @@ const Login = () => {
 
         if(data.status === 'ok') {
             alert("Successful login!")
+            sessionStorage.setItem('token', data.user);
         }
     }
 

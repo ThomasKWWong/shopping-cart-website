@@ -3,6 +3,7 @@ const cors = require ("cors");
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const user = require('./mongo/user-data');
+const post = require('./mongo/post-data');
 const jwt = require('jsonwebtoken');
 
 const app = express();
@@ -54,9 +55,8 @@ app.post("/api/login", async(req, res) => {
     if(isPasswordValid){
         //token authentication
         const token = jwt.sign({
-            username: user.username,
-            email: user.email,
-            userid: user.userid,
+            username: isUserValid.username,
+            email: isUserValid.email,
         }, 'secret123')
         return res.json({status: 'ok', user: token})
     }
@@ -64,6 +64,31 @@ app.post("/api/login", async(req, res) => {
 
     return res.json({message: "error", user: false})
 })
+
+//post an item
+app.post("/api/post", async(req, res) => {
+    try{
+        await post.create({
+            username: req.body.username,
+            description: req.body.description,
+            price: req.body.price,
+        });
+        return res.json({status: 'ok'})
+    }
+    catch(err){
+        console.log(err);
+        return res.json({status: 'error', error: 'Post could not be created'})
+    }
+})
+
+
+//decipher token and get username
+app.post("/api/token-confirmation", async (req, res) => {
+    const user = jwt.verify(req.body.token, 'secret123');
+    console.log(user);
+    return res.json({username: user.username});
+})
+
 
 //continuous listening
 app.listen(5000, () => {
